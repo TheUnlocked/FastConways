@@ -4,6 +4,7 @@
 
 static int WIDTH = 640;		// The width of the screen (default: 640)
 static int HEIGHT = 480;	// The height of the screen (default: 480)
+static bool WRAP = false;	// true enables screen wrap (default: false)
 
 // Do not touch
 static const int PIXEL_SIZE = 4 * sizeof(unsigned char);

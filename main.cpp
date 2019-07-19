@@ -1,6 +1,5 @@
 #define RENDER 1	// 1 enables rendering
 #define NOINLINE 0	// 1 prevents inlining on certain functions for profiling
-#define WRAP 0		// 1 enables screen wrap
 
 #include <execution>
 #include <iostream>
@@ -31,6 +30,9 @@ int main(int argc, char** argv) {
 		}
 		else if (!strcmp(argv[i], "--height") || !strcmp(argv[i], "-h")) {
 			HEIGHT = std::stoi(argv[++i]);
+		}
+		else if (!strcmp(argv[i], "--wrap")) {
+			WRAP = true;
 		}
 		else if (!strcmp(argv[i], "--file") || !strcmp(argv[i], "-f")) {
 			std::string filename = argv[++i];
@@ -215,15 +217,17 @@ void runLogic(int*& dataGrid, int*& tempGrid) {
 				for (int j = -1; j < 2; j++) {
 					int xPos = x + i,
 						yPos = y + j;
-#if WRAP
-					if (!((i == 0) * (j == 0))) {
-						tempGrid[positive_modulo(xPos, WIDTH) + positive_modulo(yPos, HEIGHT) * WIDTH]++;
+					if (WRAP) {
+						if (!((i == 0) * (j == 0))) {
+							tempGrid[positive_modulo(xPos, WIDTH) + positive_modulo(yPos, HEIGHT) * WIDTH]++;
+						}
 					}
-#else
-					if (!((i == 0) * (j == 0)) && inRange(0, WIDTH - 1, xPos) * inRange(0, HEIGHT - 1, yPos)) {
-						tempGrid[xPos + yPos * WIDTH]++;
+					else
+					{
+						if (!((i == 0) * (j == 0)) && inRange(0, WIDTH - 1, xPos) * inRange(0, HEIGHT - 1, yPos)) {
+							tempGrid[xPos + yPos * WIDTH]++;
+						}
 					}
-#endif
 				}
 		}
 
@@ -237,17 +241,13 @@ inline int testRule(int currentVal, int neighbors) {
 	return currentVal * (neighbors == 2) + (neighbors == 3);
 }
 
-#if WRAP == 0
 inline bool inRange(int low, int high, int num) {
 	return (num - high) * (num - low) <= 0;
 }
-#endif
 
-#if WRAP
 inline int positive_modulo(int num, int denom) {
 	return (num % denom + denom) % denom;
 }
-#endif
 
 #if RENDER
 #if NOINLINE
